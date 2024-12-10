@@ -1,7 +1,7 @@
 import requests
 
 def get_predictions_from_streamlit_cloud(user_input):
-    # Replace <your-streamlit-app> with your actual Streamlit Cloud app URL
+    # Replace <your-streamlit-app> with your deployed Streamlit Cloud app URL
     streamlit_url = "https://<your-streamlit-app>.streamlit.app/"
     params = {"user_input": ",".join(map(str, user_input))}  # Format input as a comma-separated string
 

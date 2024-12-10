@@ -95,6 +95,45 @@
 # else:
 #     st.write("No input provided. Pass `user_input` as query params.")
 
+# import streamlit as st
+# import joblib
+# import numpy as np
+
+# # Load the scaler and models
+# scaler = joblib.load('scaler.joblib')
+# models = {
+#     "processing": joblib.load('svm_model_processing.joblib'),
+#     "perception": joblib.load('svm_model_perception.joblib'),
+#     "input": joblib.load('svm_model_input.joblib'),
+#     "understanding": joblib.load('svm_model_understanding.joblib'),
+# }
+
+# # Prediction function
+# def predict(user_input):
+#     user_input_array = np.array(user_input).reshape(1, -1)
+#     user_input_scaled = scaler.transform(user_input_array)
+#     predictions = {}
+#     for target, model in models.items():
+#         prediction = model.predict(user_input_scaled)
+#         predictions[target] = prediction[0]
+#     return predictions
+
+# # Streamlit API simulation
+# st.title("Prediction API")
+# st.header("Provide Input via POST Request")
+
+# if 'user_input' in st.experimental_get_query_params():
+#     try:
+#         user_input = st.experimental_get_query_params().get('user_input', [""])[0]
+#         user_input = list(map(float, user_input.split(',')))  # Parse as list of floats
+#         output = predict(user_input)
+#         st.json(output)
+#     except Exception as e:
+#         st.json({"error": f"Error parsing input or generating predictions: {e}"})
+# else:
+#     st.write("No input provided. Pass `user_input` as query params.")
+
+
 import streamlit as st
 import joblib
 import numpy as np
@@ -118,17 +157,20 @@ def predict(user_input):
         predictions[target] = prediction[0]
     return predictions
 
-# Streamlit API simulation
+# Streamlit App Logic
 st.title("Prediction API")
-st.header("Provide Input via POST Request")
 
-if 'user_input' in st.experimental_get_query_params():
+# Check for incoming API request
+query_params = st.experimental_get_query_params()
+if "user_input" in query_params:
     try:
-        user_input = st.experimental_get_query_params().get('user_input', [""])[0]
-        user_input = list(map(float, user_input.split(',')))  # Parse as list of floats
+        # Parse input as a comma-separated list of floats
+        user_input = list(map(float, query_params["user_input"][0].split(",")))
+        # Generate predictions
         output = predict(user_input)
+        # Return JSON response
         st.json(output)
     except Exception as e:
-        st.json({"error": f"Error parsing input or generating predictions: {e}"})
+        st.json({"error": f"Failed to process input: {e}"})
 else:
-    st.write("No input provided. Pass `user_input` as query params.")
+    st.write("Provide input using the `user_input` query parameter in the format: `value1,value2,...`")
